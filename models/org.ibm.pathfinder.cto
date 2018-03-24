@@ -1,0 +1,152 @@
+/**
+ * Write your model definitions here
+ */
+
+namespace org.ibm.pathfinder
+
+abstract participant User identified by email {
+  o String email
+  o String username
+  o String firstName
+  o String lastName
+  o String phoneNumber
+  o Report[] reports
+  o Boolean isBanned default=false
+}
+
+participant Moderator identified by modID extends User {
+  o String modID
+}
+
+participant Admin identified by adminID extends User {
+  o String adminID
+}
+
+participant Player identified by playerID extends User {
+  o String playerID
+  o Campaign[] campaigns
+  o Character[] characters
+  o String[] GM_Feedback
+}
+
+asset Campaign identified by campID {
+  o String campID
+  o String campaignName
+  o String desc
+  o Boolean private
+  o Integer maxPlayers
+  o String[] restrictions
+  o String location
+  o Item[] availableLoot optional
+  --> Player GM
+  --> Player[] nonGM_players optional
+  --> Character[] party optional
+  --> Player[] kickedPlayers optional
+}
+
+asset Character identified by characterID extends CharacterTemplate{
+  o String characterID
+  o String backstory
+  o String desc
+  --> Player owner
+  o Item[] inventory
+  o String[] GM_NOTES
+}
+
+abstract asset CharacterTemplate {
+  --> Player creator
+  o String name
+  o String race
+  o Integer level 
+  o String[] classLevels
+  o Attributes attributes
+  o String[] feats
+  o String[] skills
+}
+
+asset Report identified by reportID {
+  o String reportID
+  --> Player playerReported
+  o String reason
+}
+
+concept Item {
+  o String name
+  o String qty
+  o String desc
+}
+
+concept Attributes {
+  o Integer str 
+  o Integer dex
+  o Integer con 
+  o Integer int 
+  o Integer wis 
+  o Integer cha 
+}
+
+enum Status {
+  o open
+  o closed
+}
+
+asset VoteToKick identified by voteID {
+  o String voteID
+  o Status status
+  --> Player playerToKick
+  --> Campaign campaign
+  o Integer votes
+  o String reason
+}
+
+asset PetitionToBan identified by petitionID{
+  o String petitionID
+  o Status status
+  o String reason
+  --> Player playerToBan 
+  --> User[] votes
+}
+
+transaction createCampaign {
+  --> Player GM
+  o String campaignName
+  o String campaignDesc
+  o Boolean isPrivate
+  o String[] restrictions optional
+  o Integer maxPlayers
+  o String location
+  --> Player[] players optional
+}
+
+transaction addToCampaign {
+  --> Campaign campaign
+  --> Player[] playersToAdd
+}
+
+transaction kickPlayer {
+  --> Player playerToKick
+  --> Campaign campaign
+  o String reason
+}
+
+transaction petitionToBanPlayer {
+  --> Player playerToBan
+  --> User reporter
+  o String reason
+}
+
+transaction giveLoot {
+  --> Campaign campaign
+  o Item[] loot
+}
+
+transaction removeCharacter {
+  --> Character characterToRemove
+  --> Admin initiator
+}
+
+transaction reportUser {
+  --> Player playerToReport
+  o String reason
+}
+

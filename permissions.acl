@@ -1,0 +1,61 @@
+// /**
+//  * Sample access control list.
+//  */
+// rule AdminCanReadEverything {
+//     description: "Allow all Admins read access to all resources"
+//     participant: "org.ibm.pathfinder.Admin"
+//     operation: READ
+//     resource: "org.ibm.pathfinder.*"
+//     action: ALLOW
+// }
+
+/**
+ * Sample access control list.
+ */
+rule EveryoneCanReadEverything {
+    description: "Allow all read access to all resources"
+    participant: "org.ibm.pathfinder.*"
+    operation: READ
+    resource: "org.ibm.pathfinder.*"
+    action: ALLOW
+}
+
+rule PlayersCanSubmitTransactions {
+    description: "Allow all players to submit transactions"
+    participant: "org.ibm.pathfinder.Player"
+    operation: CREATE
+    resource: "org.ibm.pathfinder.*"
+    action: ALLOW
+}
+
+rule AdminCanSubmitTransactions {
+    description: "Allow all Admins to submit transactions"
+    participant: "org.ibm.pathfinder.Admin"
+    operation: CREATE
+    resource: "org.ibm.pathfinder.*"
+    action: ALLOW
+}
+
+rule SystemACL {
+  description:  "System ACL to permit all access"
+  participant: "org.hyperledger.composer.system.Participant"
+  operation: ALL
+  resource: "org.hyperledger.composer.system.**"
+  action: ALLOW
+}
+
+rule NetworkAdminUser {
+    description: "Grant business network administrators full access to user resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "**"
+    action: ALLOW
+}
+
+rule NetworkAdminSystem {
+    description: "Grant business network administrators full access to system resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "org.hyperledger.composer.system.**"
+    action: ALLOW
+}
